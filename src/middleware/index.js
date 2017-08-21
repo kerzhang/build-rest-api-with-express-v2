@@ -1,10 +1,18 @@
-function loggedOut(req, res, next) {
-    if (req.session && req.session.userId) {
+var auth = require('basic-auth');
+
+var credentials = auth()
+
+function loggedIn(req, res, next) {
+  var credentials = auth(req);
+
+  if (req.session && req.session.userId) {
+    // if (req.session && req.session.userId) {
       return res.redirect('/');
     }
     return next();
   }
-  function requiresLogin(req, res, next) {
+
+  function requiresSignIn(req, res, next) {
     if (req.session && req.session.userId) {
       return next();
     } else {
@@ -14,5 +22,5 @@ function loggedOut(req, res, next) {
     }
   }
   module.exports.loggedOut = loggedOut;
-  module.exports.requiresLogin = requiresLogin;
+  module.exports.requiresSignIn = requiresLogin;
   
