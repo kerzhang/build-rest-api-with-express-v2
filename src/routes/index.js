@@ -5,7 +5,7 @@ var Review = require('../models/review');
 var Course = require('../models/course');
 var mid = require('../middleware');
 
-// GET /profile
+// GET authenticated users
 router.route('/api/users')
 .get(function(req, res, next) {
   User.find().exec(function(error, users) {
@@ -35,11 +35,9 @@ router.route('/api/users')
         if (error) {
           return next(error);
         } else {
-        //   req.session.userId = user._id;
-        //   return res.redirect('/profile');
         res.send(201);        
-        window.location.href = '/';
-        }
+        res.location('/');
+      }
       });
 
     } else {
@@ -49,6 +47,40 @@ router.route('/api/users')
     }
 })
 
+//Get course
+router.route('/api/courses/:courseId')
+.get(function(req, res, next) {
+  Course.findOne(req.params.courseId)
+  .populate('user reviews')
+  .exec(function(error, course) {
+    if (error) {
+      return next(error);
+    } else {
+      res.send(200);
+      return res.send(course);
+    }
+  });
+})
+.put(function(req, res, next) {
+  if (req.body.title &&
+    req.body.description) {
+
+      // use schema's `create` method to insert document into Mongo
+      User.create(courseData, function (error, course) {
+        if (error) {
+          return next(error);
+        } else {
+        res.send(201);        
+        res.location('/');
+        }
+      });
+
+    } else {
+      var err = new Error('All fields required.');
+      err.status = 400;
+      return next(err);
+    }
+})
 
 //Get courses
 router.route('/api/courses')
@@ -67,15 +99,19 @@ router.route('/api/courses')
   });
 })
 .post(function(req, res, next) {
-  if (req.body.emailAddress &&
-    req.body.fullName &&
-    req.body.password) {
+  if (req.body.title &&
+    req.body.description) {
 
       // create object with form input
       var courseData = {
-        emailAddress: req.body.emailAddress,
-        fullName: req.body.fullName,
-        password: req.body.password
+        user: req.body.user,
+        title: req.body.title,
+        description: req.body.description,
+        estimatedTime: req.body.estimatedTime,
+        materialsNeeded: req.body.materialsNeeded,
+        steps: req.body.steps,
+        reviews: req.body.reviews,
+        
       };
 
       // use schema's `create` method to insert document into Mongo
@@ -83,10 +119,8 @@ router.route('/api/courses')
         if (error) {
           return next(error);
         } else {
-        //   req.session.userId = user._id;
-        //   return res.redirect('/profile');
         res.send(201);        
-        window.location.href = '/';
+        res.location('/');
         }
       });
 
