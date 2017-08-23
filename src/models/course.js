@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
+var deepPopulate = require('mongoose-deep-populate')(mongoose);
 
 var Schema =  mongoose.Schema;
 
@@ -45,6 +46,16 @@ var CourseSchema = new mongoose.Schema({
       }
     }
   ]
+})
+.plugin(deepPopulate,{
+  populate: {
+    'user' : {
+      select: 'fullName'
+    },
+    'reviews': {
+          select: 'review'
+    }
+  }
 });
 // authenticate input against database documents
 // UserSchema.statics.authenticate = function(email, password, callback) {

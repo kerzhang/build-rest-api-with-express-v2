@@ -4,17 +4,19 @@ var User = require('../models/user');
 var Review = require('../models/review');
 var Course = require('../models/course');
 var mid = require('../middleware');
+var auth = require('basic-auth');
+
 
 // GET authenticated users
 router.route('/api/users')
-.get(function(req, res, next) {
-  User.find().exec(function(error, users) {
+.get(mid.requiresSignIn, function(req, res, next) {
+  User.findOne().exec(function(error, user) {
     if (error) {
       return next(error);
     } else {
-      console.log(users);
-      res.send(200);
-      return res.send(users);
+      console.log(user);
+      res.status(200);
+      return res.send(user);
     }
   });
 })
@@ -35,9 +37,9 @@ router.route('/api/users')
         if (error) {
           return next(error);
         } else {
-        res.send(201);        
-        res.location('/');
-      }
+          res.location('/');
+          res.sendStatus(201);        
+        }
       });
 
     } else {
@@ -50,18 +52,19 @@ router.route('/api/users')
 //Get course
 router.route('/api/courses/:courseId')
 .get(function(req, res, next) {
-  Course.findOne(req.params.courseId)
-  .populate('user reviews')
+  Course.findOne({_id: req.params.courseId})
+  .deepPopulate('user reviews')
   .exec(function(error, course) {
     if (error) {
       return next(error);
     } else {
-      res.send(200);
+      
+      res.status(200);
       return res.send(course);
     }
   });
 })
-.put(function(req, res, next) {
+.put(mid.requiresSignIn, function(req, res, next) {
   if (req.body.title &&
     req.body.description) {
 
@@ -70,8 +73,8 @@ router.route('/api/courses/:courseId')
         if (error) {
           return next(error);
         } else {
-        res.send(201);        
-        res.location('/');
+          res.location('/');
+          res.sendStatus(201);        
         }
       });
 
@@ -93,12 +96,12 @@ router.route('/api/courses')
       courses.map(function (course) {
         courseInfo.push({id: course._id, title: course.title})
       })
-      res.send(200);
+      res.status(200);
       return res.send(courseInfo);
     }
   });
 })
-.post(function(req, res, next) {
+.post(mid.requiresSignIn, function(req, res, next) {
   if (req.body.title &&
     req.body.description) {
 

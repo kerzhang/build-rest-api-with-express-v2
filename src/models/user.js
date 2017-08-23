@@ -4,7 +4,7 @@ var bcrypt = require('bcrypt');
 var UserSchema = new mongoose.Schema({
     emailAddress: {
       type: String,
-      unique: true,
+      unique: [true, 'This email is already registered.'],
       required: true,
       trim: true
     },
@@ -35,9 +35,10 @@ UserSchema.statics.authenticate = function(email, password, callback) {
           } else {
             return callback();
           }
-        })
+        });
       });
-}
+};
+
 // hash password before saving to database
 UserSchema.pre('save', function(next) {
   var user = this;
@@ -47,7 +48,7 @@ UserSchema.pre('save', function(next) {
     }
     user.password = hash;
     next();
-  })
+  });
 });
 var User = mongoose.model('User', UserSchema);
 module.exports = User;

@@ -4,7 +4,7 @@
 var express = require('express');
 var morgan = require('morgan');
 var mongoose = require('mongoose');
-var session = require('express-session');
+// var session = require('express-session');
 var bodyParser = require('body-parser');
 var seeder = require('mongoose-seeder');
 
@@ -12,20 +12,20 @@ var data = require('./data/data.json');
 
 var app = express();
 
-// use sessions for tracking logins
-app.use(
-  session({
-    secret: 'making progress everyday',
-    resave: true,
-    saveUninitialized: false
-  })
-);
+// // use sessions for tracking logins
+// app.use(
+//   session({
+//     secret: 'making progress everyday',
+//     resave: true,
+//     saveUninitialized: false
+//   })
+// );
 
-// make user ID available in templates
-app.use(function(req, res, next) {
-  res.locals.currentUser = req.session.userId;
-  next();
-});
+// // make user ID available in templates
+// app.use(function(req, res, next) {
+//   res.locals.currentUser = req.session.userId;
+//   next();
+// });
 
 // mongodb connection
 mongoose.connect('mongodb://localhost:27017/courserate');
@@ -71,13 +71,9 @@ app.use(function(req, res, next) {
 
 // Express's global error handler
 app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
+  res.status(err.status || 500).send(err.message);
+  console.log(err + ':' + err.message);
 });
-
 // start listening on our port
 var server = app.listen(app.get('port'), function() {
   console.log('Express server is listening on port ' + server.address().port);
