@@ -43,7 +43,7 @@ db.on('open', function() {
   .catch(function(err) {
     console.log("Got error while seeding: " + err.message);
   });
-})
+});
 
 
 // parse incoming requests

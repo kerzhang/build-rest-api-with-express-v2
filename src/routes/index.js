@@ -47,7 +47,7 @@ router.route('/api/users')
       err.status = 400;
       return next(err);
     }
-})
+});
 
 //Get course
 router.route('/api/courses/:courseId')
@@ -83,7 +83,7 @@ router.route('/api/courses/:courseId')
       err.status = 400;
       return next(err);
     }
-})
+});
 
 //Get courses
 router.route('/api/courses')
@@ -94,8 +94,8 @@ router.route('/api/courses')
     } else {
       let courseInfo = [];
       courses.map(function (course) {
-        courseInfo.push({id: course._id, title: course.title})
-      })
+        courseInfo.push({id: course._id, title: course.title});
+      });
       res.status(200);
       return res.send(courseInfo);
     }
@@ -132,7 +132,7 @@ router.route('/api/courses')
       err.status = 400;
       return next(err);
     }
-})
+});
 
 // GET /
 router.get('/', function(req, res, next) {
