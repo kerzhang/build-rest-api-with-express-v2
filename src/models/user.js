@@ -5,17 +5,17 @@ var UserSchema = new mongoose.Schema({
     emailAddress: {
       type: String,
       unique: [true, 'This email is already registered.'],
-      required: true,
+      required: [true, 'Email address is require.'],
       trim: true
     },
     fullName: {
       type: String,
-      required: true,
+      required: [true, 'User name is required.'],
       trim: true
     },
     password: {
       type: String,
-      required: true
+      required: [true, 'Password is required.']
     }
 });
 // authenticate input against database documents

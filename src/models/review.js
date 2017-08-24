@@ -1,5 +1,4 @@
 var mongoose = require('mongoose');
-var bcrypt = require('bcrypt');
 
 var Schema =  mongoose.Schema;
 
@@ -14,7 +13,7 @@ var ReviewSchema = new mongoose.Schema({
     },
     rating : {
       type: Number,
-      required: true,
+      required: [true, 'Please input a valid rating number'],
       min: 1, 
       max: 5
     },

@@ -1,6 +1,4 @@
 var mongoose = require('mongoose');
-var bcrypt = require('bcrypt');
-var deepPopulate = require('mongoose-deep-populate')(mongoose);
 
 var Schema =  mongoose.Schema;
 
@@ -11,11 +9,11 @@ var CourseSchema = new mongoose.Schema({
   },
   title: {
     type: String,
-    required: true
+    required: [true, 'Course title is required.']
   },
   description: {
     type: String,
-    required: true
+    required: [true, 'Course description is required.']
   },
   estimatedTime: {
     type: String
@@ -30,33 +28,22 @@ var CourseSchema = new mongoose.Schema({
       },
       title: {
         type: String,
-        required: true
+        required: [true, 'Course step title is required.']
       },
       description: {
         type: String,
-        required: true
+        required: [true, 'Course step description is required.']
       }
     }
   ],
   reviews: [
     {
-      stepNumber: {
         type: Schema.Types.ObjectId,
         ref: 'Review'
-      }
     }
   ]
-})
-.plugin(deepPopulate,{
-  populate: {
-    'user' : {
-      select: 'fullName'
-    },
-    'reviews': {
-          select: 'review'
-    }
-  }
 });
+
 // authenticate input against database documents
 // UserSchema.statics.authenticate = function(email, password, callback) {
 //   User.findOne({ emailAddress: email })

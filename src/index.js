@@ -12,39 +12,38 @@ var data = require('./data/data.json');
 
 var app = express();
 
-// // use sessions for tracking logins
-// app.use(
-//   session({
-//     secret: 'making progress everyday',
-//     resave: true,
-//     saveUninitialized: false
-//   })
-// );
-
-// // make user ID available in templates
-// app.use(function(req, res, next) {
-//   res.locals.currentUser = req.session.userId;
-//   next();
-// });
-
 // mongodb connection
-mongoose.connect('mongodb://localhost:27017/courserate');
-var db = mongoose.connection;
-// mongo error
-db.on('error', console.error.bind(console, 'connection error:'));
-// greeting on connection setup
-db.on('open', function() {
+// mongoose.connect('mongodb://cooboor:@ds028540.mlab.com:28540/cooboormongodb', {
+mongoose.connect('mongodb://localhost:27017/courserate', {
+  useMongoClient: true,
+})
+.then(function(db){
+
   console.log('== Mongodb Connection established! ==');
   seeder
-  .seed(data, { dropDatabase: true })
-  .then(function(dbData) {
-    console.log('data has been restored: ' + dbData);
-  })
-  .catch(function(err) {
-    console.log("Got error while seeding: " + err.message);
-  });
+    .seed(data, { dropDatabase: true })
+    .then(function(dbData) {
+      console.log('data has been restored: ' + dbData);
+    });
+})    
+.catch(function(err) {
+  console.error('Error returned while connecting DB: ' + err.message);
 });
 
+// mongo error
+// db.on('error', console.error('connection error'));
+// // greeting on connection setup
+// db.on('open', function() {
+//   console.log('== Mongodb Connection established! ==');
+//   seeder
+//     .seed(data, { dropDatabase: true })
+//     .then(function(dbData) {
+//       console.log('data has been restored: ' + dbData);
+//     })
+//     .catch(function(err) {
+//       console.log('Got error while seeding: ' + err.message);
+//     });
+// });
 
 // parse incoming requests
 app.use(bodyParser.json());
