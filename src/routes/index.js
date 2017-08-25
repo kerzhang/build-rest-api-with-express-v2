@@ -20,7 +20,7 @@ router
       } else {
         // console.log(user);
         res.status(200);
-        return res.send(credentials.name);
+        return res.send(user);
       }
     });
   })
@@ -96,14 +96,14 @@ router
 //Get courses
 router
   .route('/api/courses')
-  .get(function(req, res, next) {
+  .get(mid.requiresSignIn, function(req, res, next) {
     Course.find().exec(function(error, courses) {
       if (error) {
         return next(error);
       } else {
-        let courseInfo = [];
+        var courseInfo = [];
         courses.map(function(course) {
-          courseInfo.push({ id: course._id, title: course.title });
+          courseInfo.push({ _id: course._id, title: course.title });
         });
         res.status(200);
         return res.send(courseInfo);
@@ -114,9 +114,9 @@ router
     if (req.body.title && req.body.description && req.body.steps) {
       // create object with form input
       var courseData = {
-        user: req.body.user,
         title: req.body.title,
         description: req.body.description,
+        user: req.body.user,
         estimatedTime: req.body.estimatedTime,
         materialsNeeded: req.body.materialsNeeded,
         steps: req.body.steps,
@@ -128,8 +128,8 @@ router
         if (error) {
           return next(error);
         } else {
-          res.status(201);
           res.location('/');
+          res.sendStatus(201);
         }
       });
     } else {
@@ -146,27 +146,24 @@ router.post('/api/courses/:courseId/reviews', mid.requiresSignIn, function(
   next
 ) {
 
-  Course.findById(courseId, function(error, course){
-    if (course.user !== req.body.user) {
-      var reviewData = {
-        user: req.body.user,
-        postedOn: req.body.postedOn,
-        rating: req.body.rating,
-        review: req.body.review
-      };
+  Course.findOne({ _id: req.params.courseId })
+  .populate('user', '_id')
+  .exec(function(error, course) {
+    // if (course.user !== req.body.user) {
+      var reviewData = new Review(req.body);
     
       Review.create(reviewData, function(error, review) {
         if (error) {
           return next(error);
         } else {
           res.status(201);
-          res.location('/api/courses/:courseId');
+          return res.location('/api/courses/'+  req.params.courseId);
         }
       });
-    } else {
-      var error = new Error('User can not review their own courses.');
-      return next(error);
-    }
+    // } else {
+    //   error = new Error('User can not review their own courses.');
+    //   return next(error);
+    // }
   });
   
 });

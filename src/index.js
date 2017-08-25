@@ -23,27 +23,12 @@ mongoose.connect('mongodb://localhost:27017/courserate', {
   seeder
     .seed(data, { dropDatabase: true })
     .then(function(dbData) {
-      console.log('data has been restored: ' + dbData);
+      console.log('data has been restored');
     });
 })    
 .catch(function(err) {
   console.error('Error returned while connecting DB: ' + err.message);
 });
-
-// mongo error
-// db.on('error', console.error('connection error'));
-// // greeting on connection setup
-// db.on('open', function() {
-//   console.log('== Mongodb Connection established! ==');
-//   seeder
-//     .seed(data, { dropDatabase: true })
-//     .then(function(dbData) {
-//       console.log('data has been restored: ' + dbData);
-//     })
-//     .catch(function(err) {
-//       console.log('Got error while seeding: ' + err.message);
-//     });
-// });
 
 // parse incoming requests
 app.use(bodyParser.json());
@@ -77,3 +62,6 @@ app.use(function(err, req, res, next) {
 var server = app.listen(app.get('port'), function() {
   console.log('Express server is listening on port ' + server.address().port);
 });
+
+//This is for testing
+module.exports = app;
