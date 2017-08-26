@@ -150,16 +150,22 @@ router.post('/api/courses/:courseId/reviews', mid.requiresSignIn, function(
   .populate('user', '_id')
   .exec(function(error, course) {
     // if (course.user !== req.body.user) {
+      if(course) {
       var reviewData = new Review(req.body);
     
       Review.create(reviewData, function(error, review) {
         if (error) {
           return next(error);
         } else {
-          res.status(201);
-          return res.location('/api/courses/'+  req.params.courseId);
+           res.location('/api/courses/'+  req.params.courseId);
+           return res.status(201);
         }
       });
+    } else {
+      error = new Error('Course not found.');
+      res.status(400);
+      return next(error);
+    }
     // } else {
     //   error = new Error('User can not review their own courses.');
     //   return next(error);

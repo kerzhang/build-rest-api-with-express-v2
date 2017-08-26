@@ -8,19 +8,14 @@ var Course = require('../src/models/course.js');
 chai.use(chaiHttp);
 
 describe('Course Test', function() {
-    
   before(function(done) {
     Course.remove({}, function(err) {
-      // Course.find().exec(function(err, courses) {
-      //   console.log('Total courses: ' + courses.length);
-        if (err) console.log('Error returned while initialization: ' + err);
-      // });
+      if (err) console.log('Error returned while initialization: ' + err);
     });
     done();
   });
 
   describe('/POST course function: ', function() {
-
     it('it should POST a new course ==>', function(done) {
       //create a new course object
       var course = {
@@ -48,9 +43,7 @@ describe('Course Test', function() {
           done();
         });
     });
-  });
 
-  describe('/GET all existing courses', function() {
     it('it should return all existing courses ==>', function(done) {
       chai
         .request(server)

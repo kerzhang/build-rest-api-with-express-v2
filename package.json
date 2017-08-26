@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "nodemon ./src/index.js localhost 5000",
-    "test": "mocha --reporter list",
+    "test": "nodemon --exec mocha --reporter list",
     "test:watch": "mocha --watch ./test ./"
   },
   "author": "",

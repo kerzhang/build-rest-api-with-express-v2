@@ -2,7 +2,7 @@ var chai = require('chai');
 var chaiHttp = require('chai-http');
 var server = require('../src/index');
 var should = chai.should();
-var expect = chai.expect();
+var expect = chai.expect;
 
 var User = require('../src/models/user.js');
 
@@ -12,9 +12,7 @@ describe('User Test', function() {
 
   before(function(done) {
     User.remove({}, function(err) {
-      User.find().exec(function(err, users) {
-        console.log('Total users: ' + users.length);
-      });
+      if (err) console.log(err);
     });
     done();
   });
@@ -34,13 +32,29 @@ describe('User Test', function() {
         .send(user)
         .end(function(err, res) {
           res.should.have.status(201);
-          res.header.should.have.property('location').eql('/');
+          // res.header.should.have.property('location').eql('/');
+          expect('Location', '/');
           done();
         });
     });
-  });
 
-  describe('/POST user function: ', function() {
+    it('it should return error when creating user without required field ==>', function(done) {
+      //create a new user object
+      var user = {
+        fullName: 'John Smith',
+        password: 'password'
+      };
+
+      chai
+        .request(server)
+        .post('/api/users')
+        .send(user)
+        .end(function(err, res) {
+          expect(res.error.text).to.include('All fields required.');
+          done();
+        });
+    });
+
     it('it should return error when a new user come with existing email ==>', function(done) {
       //create a new user object
       var user = {
@@ -54,16 +68,13 @@ describe('User Test', function() {
         .post('/api/users')
         .send(user)
         .end(function(err, res) {
-          if (err) console.log(err);
-          res.should.have.property('error');
-          expect('text').to.include('E11000 duplicate key error');
-          // res.should.have.property('text').include('E11000 duplicate key error collection');
+          expect(res.error.text).to.include('E11000 duplicate key error');
           done();
         });
     });
   });
 
-  describe(' Get user without auth ==>', function() {
+  describe(' Get user ==>', function() {
     it('it should return error to user without authorization', function(done) {
       chai.request(server).get('/api/users').end(function(err, res) {
         res.should.have.property('error');
@@ -71,9 +82,7 @@ describe('User Test', function() {
         done();
       });
     });
-  });
 
-  describe('/GET User with auth ==> ', function() {
     it('it should return the Authorized user', function(done) {
       chai
         .request(server)
