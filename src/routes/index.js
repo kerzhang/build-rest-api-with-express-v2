@@ -63,8 +63,14 @@ router
       .exec(function(error, course) {
         if (error) {
           return next(error);
+        } else if (!course){
+          error = new Error('Course not found.');
+          res.status(404);
+          error.status = 404;
+          return next(error);
         } else {
           res.status(200);
+          console.log(course.title);
           return res.send(course);
         }
       });
@@ -73,7 +79,7 @@ router
     Course.findById(req.params.courseId, function(error, course) {
       if (course) {
         //if found the course, apply the new value to the found course object.
-        course.user = req.body.user;
+        course.user = res.locals.currentUser._id;
         course.title = req.body.title;
         course.description = req.body.description;
         course.estimatedTime = req.body.estimatedTime;
@@ -93,6 +99,16 @@ router
         var err = new Error('The course not found.');
         err.status = 400;
         return next(err);
+      }
+    });
+  })
+  .delete(mid.requiresSignIn, function(req, res, next) {
+    Course.remove({_id: req.params.courseId}, function(error, result) {
+      if(error) {
+        return next(error);
+      } else {
+
+        return res.sendStatus(200);
       }
     });
   });
@@ -151,7 +167,7 @@ router.post('/api/courses/:courseId/reviews',
   Course.findOne({ _id: req.params.courseId })
     .exec(function(error, course) {
       if (course) {
-        // console.log(typeof(course.user));
+        console.log(course.title);
         // console.log(typeof(res.locals.currentUser._id));
 
         // the type of both user's _id are 'Object', convert them to string before comparing.
@@ -166,13 +182,19 @@ router.post('/api/courses/:courseId/reviews',
             if (error) {
               return next(error);
             } else {
+              course.reviews.push(review._id);
+              course.save(function (error, course) {
+                if(error){
+                  return next(error);
+                }
+              });
               res.location('/api/courses/' + req.params.courseId);
               return res.sendStatus(201);
             }
           });
         }
       } else {
-        error = new Error('Course not found.');
+        error = new Error('Course was not found.');
         res.status(404);
         error.status = 404;
         return next(error);
