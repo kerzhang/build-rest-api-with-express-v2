@@ -1,6 +1,6 @@
 var chai = require('chai');
 var chaiHttp = require('chai-http');
-var server = require('../src/index');
+// var server = require('../src/index');
 var should = chai.should();
 var expect = chai.expect;
 
@@ -10,24 +10,23 @@ chai.use(chaiHttp);
 
 describe('User Test', function() {
 
-  before(function(done) {
-    User.remove({}, function(err) {
-      if (err) console.log(err);
-    });
-    done();
-  });
+  // before(function(done) {
+  //   User.remove({}, function(err) {
+  //     if (err) console.log(err);
+  //     done();      
+  //   });
+  // });
 
   describe('/POST user function: ', function() {
     it('it should create a new user ==>', function(done) {
       //create a new user object
       var user = {
         emailAddress: 'ker@cooboor.com',
-        fullName: 'John Smith',
+        fullName: 'Lady Gaga',
         password: 'password'
       };
 
-      chai
-        .request(server)
+      chai.request('localhost:5000')
         .post('/api/users')
         .send(user)
         .end(function(err, res) {
@@ -45,8 +44,8 @@ describe('User Test', function() {
         password: 'password'
       };
 
-      chai
-        .request(server)
+      chai.request('localhost:5000')
+      // .request(server)
         .post('/api/users')
         .send(user)
         .end(function(err, res) {
@@ -63,12 +62,13 @@ describe('User Test', function() {
         password: 'password'
       };
 
-      chai
-        .request(server)
+      chai.request('localhost:5000')
+      
+        // .request(server)
         .post('/api/users')
         .send(user)
         .end(function(err, res) {
-          expect(res.error.text).to.include('E11000 duplicate key error');
+          expect(res.error.text).to.include('eMail already exist');
           done();
         });
     });
@@ -76,7 +76,9 @@ describe('User Test', function() {
 
   describe(' Get user ==>', function() {
     it('it should return error to user without authorization', function(done) {
-      chai.request(server).get('/api/users').end(function(err, res) {
+      chai.request('localhost:5000')
+      .get('/api/users')
+      .end(function(err, res) {
         res.should.have.property('error');
         res.should.have.status(401);
         done();
@@ -84,10 +86,10 @@ describe('User Test', function() {
     });
 
     it('it should return the Authorized user', function(done) {
-      chai
-        .request(server)
-        .get('/api/users')
-        .auth('ker@cooboor.com', 'password')
+      
+      chai.request('localhost:5000')
+      .get('/api/users')
+        .set('Authorization', 'Basic a2VyQGNvb2Jvb3IuY29tOnBhc3N3b3Jk')
         .end(function(err, res) {
 
           res.should.have.status(200);

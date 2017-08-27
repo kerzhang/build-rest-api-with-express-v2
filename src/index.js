@@ -4,7 +4,6 @@
 var express = require('express');
 var morgan = require('morgan');
 var mongoose = require('mongoose');
-// var session = require('express-session');
 var bodyParser = require('body-parser');
 var seeder = require('mongoose-seeder');
 
@@ -13,18 +12,18 @@ var data = require('./data/data.json');
 var app = express();
 
 // mongodb connection
-// mongoose.connect('mongodb://cooboor:@ds028540.mlab.com:28540/cooboormongodb', {
+// mongoose.connect('mongodb://cooboor:xia0yueR@ds028540.mlab.com:28540/cooboormongodb', {
 mongoose.connect('mongodb://localhost:27017/courserate', {
   useMongoClient: true,
 })
 .then(function(db){
 
-  console.log('== Mongodb Connection established! ==');
   seeder
     .seed(data, { dropDatabase: true })
     .then(function(dbData) {
-      console.log('data has been restored');
+      console.log('== data has been restored ==');
     });
+    console.log('== Mongodb is ready! ==');
 })    
 .catch(function(err) {
   console.error('Error returned while connecting DB: ' + err.message);
@@ -56,7 +55,7 @@ app.use(function(req, res, next) {
 // Express's global error handler
 app.use(function(err, req, res, next) {
   res.status(err.status || 500).send(err.message);
-  console.log(err + ':' + err.message);
+  console.log(err.message);
 });
 // start listening on our port
 var server = app.listen(app.get('port'), function() {
@@ -64,4 +63,4 @@ var server = app.listen(app.get('port'), function() {
 });
 
 //This is for testing
-module.exports = app;
+module.exports = server;
