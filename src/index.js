@@ -13,7 +13,6 @@ var data = require('./data/data.json');
 var app = express();
 
 // mongodb connection
-// mongoose.connect('mongodb://cooboor:@ds028540.mlab.com:28540/cooboormongodb', {
 mongoose.Promise = bluebird;
 mongoose.connect('mongodb://localhost:27017/courserate', {
   useMongoClient: true,

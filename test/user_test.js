@@ -3,10 +3,11 @@ var request = require('supertest');
 
   describe.skip('/POST user function: ', function() {
     it('it should create a new user ==>', function(done) {
+      var newuserid = Math.ceil(Math.random()*10000);
       //create a new user object
       var user = {
-        emailAddress: 'ker@cooboor.com',
-        fullName: 'Lady Gaga',
+        emailAddress: newuserid + '@cooboor.com',
+        fullName: 'Super Man',
         password: 'password'
       };
 

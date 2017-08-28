@@ -92,7 +92,7 @@ router
             return next(error);
           } else {
             res.location('/');
-            res.sendStatus(201);
+            res.sendStatus(204);
           }
         });
       } else {
