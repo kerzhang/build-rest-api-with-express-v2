@@ -17,7 +17,8 @@ function requiresSignIn(req, res, next) {
       }
     });
   } else {
-    var err = new Error('Please sign in first!');
+    var err = new Error();
+    err.message = 'Please sign in first!';
     err.status = 401;
     return next(err);
   }

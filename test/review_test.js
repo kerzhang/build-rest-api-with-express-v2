@@ -1,9 +1,8 @@
-'use strict';
 var request = require('supertest');
 
 describe('Review Test', function() {
 
-  describe.skip('POST Review', function() {
+  describe('POST Review', function() {
     it('It should return error when user review their owner course ==>', function(
       done
     ) {

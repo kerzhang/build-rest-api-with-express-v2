@@ -1,61 +1,13 @@
 var express = require('express');
 var router = express.Router();
-var User = require('../models/user');
 var Review = require('../models/review');
 var Course = require('../models/course');
 var mid = require('../middleware');
 var auth = require('basic-auth');
 
-// GET authenticated users
-router
-  .route('/api/users')
-  .get(mid.requiresSignIn, function(req, res, next) {
-    // console.log(res.locals.currentUser);
-    res.status(200);
-    return res.send(res.locals.currentUser);
-    //   }
-    // });
-  })
-  .post(function(req, res, next) {
-    
-    if (req.body.emailAddress && req.body.fullName && req.body.password) {
-
-      User.findOne({emailAddress:req.body.emailAddress})
-          .exec(function (error, user) {
-            if (user) {
-              var err = new Error('eMail already exist.');
-              err.status = 400;
-              return next(err);
-            } else {
-              // create object with form input
-              var userData = {
-                emailAddress: req.body.emailAddress,
-                fullName: req.body.fullName,
-                password: req.body.password
-              };
-
-              // use schema's `create` method to insert document into Mongo
-              User.create(userData, function(error, user) {
-                if (error) {
-                  return next(error);
-                } else {
-                  res.location('/');
-                  res.sendStatus(201);
-                }
-              });
-            }
-          });
-
-    } else {
-      var err = new Error('All fields required.');
-      err.status = 400;
-      return next(err);
-    }
-  });
-
 //Get course
 router
-  .route('/api/courses/:courseId')
+  .route('/:courseId')
   .get(function(req, res, next) {
     Course.findOne({ _id: req.params.courseId })
       .populate('reviews')
@@ -115,7 +67,7 @@ router
 
 //Get courses
 router
-  .route('/api/courses')
+  .route('/')
   .get(function(req, res, next) {
     Course.find().exec(function(error, courses) {
       if (error) {
@@ -131,7 +83,6 @@ router
     });
   })
   .post(mid.requiresSignIn, function(req, res, next) {
-    if (req.body.title && req.body.description && req.body.steps) {
       // create object with form input
       var courseData = {
         title: req.body.title,
@@ -152,15 +103,10 @@ router
           res.sendStatus(201);
         }
       });
-    } else {
-      var err = new Error('All fields required.');
-      err.status = 400;
-      return next(err);
-    }
   });
 
 //Create a review
-router.post('/api/courses/:courseId/reviews', 
+router.post('/:courseId/reviews', 
             mid.requiresSignIn, 
             function(req, res, next) {
               // console.log(req.params.courseId);
@@ -172,7 +118,8 @@ router.post('/api/courses/:courseId/reviews',
 
         // the type of both user's _id are 'Object', convert them to string before comparing.
         if (course.user.toString() === res.locals.currentUser._id.toString()) {
-          error = new Error('User can not review their own courses.');
+          error = new Error();
+          error.message = 'Users can not review their own courses.';
           error.status = 400;
           return next(error);
         } else {
@@ -200,12 +147,6 @@ router.post('/api/courses/:courseId/reviews',
         return next(error);
       }
     });
-});
-
-// GET /
-router.get('/', function(req, res, next) {
-  // return res.render('index', { title: 'Home' });
-  return res.send('Hello from Express!');
 });
 
 module.exports = router;

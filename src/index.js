@@ -43,8 +43,10 @@ app.use(morgan('dev'));
 app.use('/', express.static('public'));
 
 // include routes
-var routes = require('./routes/index');
-app.use('/', routes);
+var courseRoutes = require('./routes/courses');
+var userRoutes = require('./routes/users');
+app.use('/api/courses', courseRoutes);
+app.use('/api/users', userRoutes);
 
 // catch 404 and forward to global error handler
 app.use(function(req, res, next) {
@@ -55,7 +57,8 @@ app.use(function(req, res, next) {
 
 // Express's global error handler
 app.use(function(err, req, res, next) {
-  res.status(err.status || 500).send(err.message);
+  res.status(err.status || 500);
+  res.send(err);
   console.log(err.message);
 });
 // start listening on our port

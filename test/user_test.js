@@ -1,7 +1,7 @@
 var request = require('supertest');
 
 
-  describe.skip('/POST user function: ', function() {
+  describe('/POST user /api/users ==> ', function() {
     it('it should create a new user ==>', function(done) {
       var newuserid = Math.ceil(Math.random()*10000);
       //create a new user object
@@ -28,7 +28,10 @@ var request = require('supertest');
       request('localhost:5000')
         .post('/api/users')
         .send(user)
-        .expect('All fields required.', done);
+        .expect(function (error, res) {
+          assert(error.indexOf('validation failed') > 0 , true);
+        });
+        done();
     });
 
     it('it should return error when a new user come with existing email ==>', function(
@@ -36,7 +39,7 @@ var request = require('supertest');
     ) {
       //create a new user object
       var user = {
-        emailAddress: 'ker@cooboor.com',
+        emailAddress: 'joe@smith.com',
         fullName: 'John Smith',
         password: 'password'
       };
@@ -44,11 +47,14 @@ var request = require('supertest');
       request('localhost:5000')
         .post('/api/users')
         .send(user)
-        .expect('eMail already exist.', done);
+        .expect( function (error, res) {
+          assert(error.message,'eMail already exist.');
+        });
+        done();
     });
   });
 
-  describe(' Get user ==>', function() {
+  describe.only('Get user: /api/users ==>', function() {
     
     it('it should return error to user without authorization', function(done) {
       request('localhost:5000').get('/api/users').expect(401, done);
